@@ -94,6 +94,7 @@ public:
                 get_ptr<T>(weights_[i + 0 * layer_num_]);
             gpt_weights_.decoder_layer_weights[i]->pre_layernorm_weights.beta =
                 get_ptr<T>(weights_[i + 1 * layer_num_]);
+            
             gpt_weights_.decoder_layer_weights[i]->self_attention_weights.query_weight.kernel =
                 get_ptr<T>(weights_[i + 2 * layer_num_]);
             gpt_weights_.decoder_layer_weights[i]->self_attention_weights.query_weight.bias =
@@ -106,6 +107,17 @@ public:
                 get_ptr<T>(weights_[i + 6 * layer_num_]);
             gpt_weights_.decoder_layer_weights[i]->self_attn_layernorm_weights.beta =
                 get_ptr<T>(weights_[i + 7 * layer_num_]);
+            /*
+            if (i == 0){
+                #forward
+                for (int i = 0； i < number_of_weights){
+
+                }
+                for (auto value : weights){
+
+                }   
+            }
+            */
             gpt_weights_.decoder_layer_weights[i]->ffn_weights.intermediate_weight.kernel =
                 get_ptr<T>(weights_[i + 8 * layer_num_]);
             gpt_weights_.decoder_layer_weights[i]->ffn_weights.intermediate_weight.bias =
@@ -115,7 +127,7 @@ public:
             gpt_weights_.decoder_layer_weights[i]->ffn_weights.output_weight.bias =
                 get_ptr<T>(weights_[i + 11 * layer_num_]);
         }
-
+        // 
         size_t weight_offset = gpt_variant_params_.has_post_decoder_layernorm ? 0 : 2;
         if (gpt_variant_params_.has_post_decoder_layernorm) {
             gpt_weights_.post_decoder_layernorm.gamma = get_ptr<T>(weights_[12 * layer_num_ + 0]);

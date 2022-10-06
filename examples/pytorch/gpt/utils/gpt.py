@@ -27,7 +27,7 @@ import numpy as np
 import torch.distributed as dist
 
 
-class GPTWeights(object):
+class GPTWeights(object): # self.weights
     def __init__(self, head_num, size_per_head, layer_num, vocab_size, max_seq_len, tensor_para_size, pipeline_para_size,
                  has_adapters=False, adapter_inter_size = 0, has_post_decoder_layernorm=True,
                  int8_mode=0, weights_data_type=typing.Union[str, np.float32]):
@@ -147,7 +147,7 @@ class GPTWeights(object):
         for i in range(len(self.w)):
             if isinstance(self.w[i], list):
                 for j in range(len(self.w[i])):
-                    self.w[i][j] = func(self.w[i][j])
+                    self.w[i][j] = func(self.w[i][j]) # cuda(self.w[i][j]) cuda => torch 
             else:
                 self.w[i] = func(self.w[i])
 
@@ -176,7 +176,7 @@ class GPTWeights(object):
         # Load
         def is_load(i): return i >= self.layers_per_device * \
             pipeline_para_rank and i < self.layers_per_device * (pipeline_para_rank + 1)
-        w.extend([torch.from_numpy(np.fromfile(ckpt_path + "/model.layers.{}.input_layernorm.weight.bin".format(i),
+        w.extend([torch.from_numpy(np.fromfile(ckpt_path + "/model.layers.{}.input_layernorm.weight.bin".format(i), 
                                                dtype=self.weights_data_type)) if is_load(i) else torch.empty(0).to(type_map[self.weights_data_type]) for i in range(self.layer_num)])
         w.extend([torch.from_numpy(np.fromfile(ckpt_path + "/model.layers.{}.input_layernorm.bias.bin".format(i),
                                                dtype=self.weights_data_type)) if is_load(i) else torch.empty(0).to(type_map[self.weights_data_type]) for i in range(self.layer_num)])
@@ -361,7 +361,7 @@ class GPT(nn.Module):
             self.cuda()
 
     def cuda(self):
-        self.weights._map(lambda w: w.cuda(self.device))
+        self.weights._map(lambda w: w.cuda(self.device)) # function) w => list
         if self.int8_mode != 0:
             self.weights._map_int8(lambda w: w.cuda(self.device))
 
@@ -373,7 +373,7 @@ class GPT(nn.Module):
                                                            self.use_sparse_gemm,
                                                            self.layernorm_eps, self.layernorm_type, self.activation_type,
                                                            self.has_post_decoder_layernorm, self.has_adapters, self.adapter_inter_size, # gpt_variant_params
-                                                           self.weights.w)
+                                                           self.weights.w # list of pytorch tensor) 
         self.build_model = True
 
     def forward(self,

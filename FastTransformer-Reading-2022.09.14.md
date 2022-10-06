@@ -1,5 +1,12 @@
 ## FastTransformer-Reading-2022.09.14
 
+### TODO
+
+1. Try to run the fast transformer with a correct example
+2. figure out how does python transfer weights to c++ weights how to orgranize it
+3. find calling chain do we call these four GEMM functions 
+4. try to modify weights pointer \& print weight to the GEMM function \& find the weights if the other part of code use \& wait to add a gemm method
+
 ### Run
 
 1. cmake .
@@ -90,6 +97,9 @@ Implement a cublas_wrapper_->SparseGemm
 1. Replace cublas_wrapper_->Gemm above with cublas_wrapper_->SparseGemm (All of them related above 4*2 Gemm)
 
 2. For the attention_weights->query_weight.kernel, attention_weights->attention_output_weight.kernel, ffn_weights->intermediate_weight.kernel, ffn_weights->output_weight.kernel. We need to pass by the other pointer format.
+a. load
+
+
 
 ## Unit Test 
 
